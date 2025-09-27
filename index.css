@@ -285,10 +285,22 @@ lottie-player {
    FEATURES SECTION
 ==================== */
 .features-section {
-  padding: 60px 10%;
+  position: relative;
+  padding: 50px 5%;
   font-family: "Poppins", sans-serif;
   text-align: center;
   scroll-margin-top: 15vh;
+  background: radial-gradient(circle at top left, #e0f7fa, #ffffff);
+  overflow: hidden;
+}
+
+.features-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(#80deea 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.25;
 }
 
 .feature-title {
@@ -300,9 +312,8 @@ lottie-player {
   position: relative;
   display: inline-block;
   box-shadow: 8px 15px 15px rgb(8, 8, 8);
-  padding: 4px 10px;
+  padding: 10px 100px;
   border-radius: 12px;
-  transform: perspective(220px) rotateX(20deg);
 }
 
 .features-grid {
@@ -496,3 +507,8 @@ lottie-player {
   margin-top: 25px;
   padding-bottom: 20px;
 }
+
+
+
+
+

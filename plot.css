@@ -25,7 +25,7 @@ header {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.356);
   position: fixed;
   top: 0;
-  z-index: 2;
+  z-index: 10;
   padding: 0 3%;
   animation: slideDown 1s ease forwards;
 }
@@ -197,8 +197,7 @@ header a{
 /* Main layout */
 .plot-main {
   display: flex;
-  margin-top: 12vh;
-  height: 88vh;
+  margin-top: 15vh;
 }
 
 .sidebar {
@@ -244,6 +243,22 @@ header a{
   background-color: #ddd;
 }
 
+.unit-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid #ccc;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 13px;
+  background-color: white;
+}
+
+.unit-group label {
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .area-table {
   width: 100%;
   border-collapse: collapse;
@@ -270,11 +285,11 @@ header a{
   transition: transform 0.2s, background-color 0.3s;
 }
 
-#generateBtn {
+.actions  button{
   background-color: #28a745;
   color: #fff;
 }
-#generateBtn:hover {
+.actions button:hover {
   background-color: #218838;
   transform: scale(1.02);
 }
@@ -314,3 +329,263 @@ footer {
   background-color: #f5f7fa;
   box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
 }
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f8f9fb;
+  color: #333;
+}
+
+.plot-main {
+  display: flex;
+  height: calc(100vh - 80px);
+}
+
+.canvas-container {
+  position: relative; /* important! allows absolute children */
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url(./assets/bg3.jpg);
+  background-position: center;
+  background-size: cover;
+  border-right: 1px solid #ddd;
+}
+
+#landCanvas {
+  width: 95%;
+  height: 95%;
+  border: 2px dashed #aaa;
+  border-radius: 12px;
+  background: #fdfdfd;
+}
+
+.control-panel {
+  flex: 0.5;
+  padding: 20px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #ddd;
+  overflow-y: scroll;
+  border-bottom: 1px solid black;
+}
+
+.control-panel h2 {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.input-group input, .input-group select {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.results-panel {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 13px;
+}
+
+.results-panel h3 {
+  margin-bottom: 10px;
+}
+
+.area-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.area-table th, .area-table td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.actions button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.actions button:hover {
+  opacity: 0.85;
+}
+
+#generateBtn,#customizeBtn{ background: #4CAF50; color: white; }
+#dragModeBtn { background: #ff9800; color: white; }
+#exportBtn { background: #2196F3; color: white; }
+
+
+/* ================================
+------ Canvas Toolbar -------------
+===================================*/
+
+
+.canvas-toolbar {
+  position: absolute;
+  top: 20px;
+  left: 35px;
+  display: flex;
+  gap: 15px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 8px;
+  padding: 6px 12px;
+  z-index: 5;
+}
+
+
+.upload-method {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+  /* Default text color for selected option */
+  #uploadMethod {
+    color: #aaa; /* light gray for placeholder initially */
+  }
+
+  /* After selecting an option, make text normal */
+  #uploadMethod.selected {
+    color: #000; /* black for selected options */
+  }
+
+
+.upload-method select {
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.toolbar-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.3s;
+}
+
+.toolbar-actions button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+#uploadBtn { background: #00b894; color: #fff; }      /* Greenish */
+#drawBtn   { background: #673ab7; color: #fff; }      /* Purple */
+#undoBtn   { background: #f44336; color: #fff; }      /* Red */
+#okBtn     { background: #4caf50; color: #fff; }      /* Green */
+#measureBtn { background: #ff9800; color: #fff; }     /* Orange */
+#resetBtn  { background: #2196f3; color: #fff; } 
+
+.upload-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none; /* hidden initially */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.upload-modal-content {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.upload-modal-content button {
+  margin: 10px;
+  padding: 8px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ==============================
+ Measure Distance Feature
+============================== */
+
+/* Distance box in right panel */
+#measureDistanceBox {
+  border-radius: 8px;
+  padding: 6px;
+  border: 1px solid rgb(24, 230, 24);
+  box-shadow: 1px 3px 3px rgb(131, 245, 131);
+}
+
+#measureDistanceBox label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
+}
+
+#measureDistanceBox input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: default;
+}
+
+/* Highlighted path along polygon edges */
+.boundary-highlight {
+  stroke: orange;
+  stroke-width: 3;
+  fill: none;
+}
+
+.mode-indicator {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  z-index: 5;
+  border: 1px solid black;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 4px 5px 5px rgb(104, 101, 101);
+}
+
+
+
+
+
+
