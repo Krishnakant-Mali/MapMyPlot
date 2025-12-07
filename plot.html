@@ -4,17 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plot Division | MapMyPlot</title>
-  <link rel="stylesheet" href="index.css" />
-    <link rel="stylesheet" href="contact.css" />
-    <link rel="stylesheet" href="how-to-use.css" />
-    <link rel="stylesheet" href="login.css" />
-    <link rel="stylesheet" href="plot.css" />
-    <link rel="stylesheet" href="terms-condition.css" />
-    <link rel="stylesheet" href="privacy-policy.css" />
+  <link rel="stylesheet" href="plot.css" />
   <link rel="icon" href="./assets/logo.png" type="image/x-icon" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Leaflet CSS (optional, if used later) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- HTML2PDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 </head>
@@ -54,12 +50,14 @@
   <main class="plot-main">
 
     <!-- LEFT: Canvas Section -->
-    <section class="canvas-container">
+    <section class="canvas-container" id="canvasContainer">
       <!-- Toolbar -->
       <div class="canvas-toolbar">
         <div class="toolbar-actions">
           <button id="uploadBtn" >Upload Image</button>
           <button id="drawBtn" >Draw</button>
+          <button id="heatmapBtn"><i class="fas fa-fire"></i> Heatmap</button>
+          <button id="aiBtn"><i class="fas fa-robot"></i> AI Analyze</button> 
           <button id="undoBtn" >Undo</button>
           <button id="okBtn" >OK</button>
           <button id="measureBtn" >Measure Distance</button>
@@ -69,6 +67,9 @@
       </div>
 
       <div id="modeIndicator" class="mode-indicator">Mode: Normal</div>
+      
+      <!-- AI Scanner Overlay -->
+      <div id="aiScanner" class="ai-scanner"></div>
 
       <!-- Canvas -->
       <canvas id="landCanvas"></canvas>
@@ -87,26 +88,26 @@
         <small data-i18n="controlPanel.refLengthNote">(Used to calculate actual scale)</small>
       </div>
 
-<div class="unit-group" >
-  <div class="length-unit">
-       <label for="lengthUnit">Length Unit</label>
-       <select id="lengthUnit">
-    <option value="m">Meters</option>
-    <option value="ft">Feet</option>
-    <option value="in">Inches</option>
-  </select>
-  </div>
+      <div class="unit-group" >
+        <div class="length-unit">
+             <label for="lengthUnit">Length Unit</label>
+             <select id="lengthUnit">
+          <option value="m">Meters</option>
+          <option value="ft">Feet</option>
+          <option value="in">Inches</option>
+        </select>
+        </div>
 
-  <div class="area-unit">
-    <label for="areaUnit">Area Unit:</label>
-   <select id="areaUnit">
-    <option value="m">m²</option>
-    <option value="ft">ft²</option>
-    <option value="in">in²</option>
-    <option value="acre">Acres</option>
-  </select>
-  </div>
-</div>
+        <div class="area-unit">
+          <label for="areaUnit">Area Unit:</label>
+         <select id="areaUnit">
+          <option value="m">m²</option>
+          <option value="ft">ft²</option>
+          <option value="in">in²</option>
+          <option value="acre">Acres</option>
+        </select>
+        </div>
+      </div>
 
 
       <div class="actions">
@@ -115,9 +116,9 @@
       </div>
 
       <div id="measureDistanceBox" class="input-group" style="display:none;">
-  <label for="boundaryDistance" data-i18n="controlPanel.boundaryDistanceLabel">Distance Along Boundary</label>
-  <input type="text" id="boundaryDistance" readonly />
-</div>
+        <label for="boundaryDistance" data-i18n="controlPanel.boundaryDistanceLabel">Distance Along Boundary</label>
+        <input type="text" id="boundaryDistance" readonly />
+      </div>
 
       <div class="results-panel">
         <h3 data-i18n="controlPanel.resultsPanelTitle">Area Results</h3>
@@ -143,7 +144,7 @@
       </div>
 
       <div class="actions">
-        <button id="exportBtn" data-i18n="controlPanel.exportBtn">💾 Export</button>
+        <button id="exportBtn" data-i18n="controlPanel.exportBtn">💾 Export Report</button>
       </div>
     </aside>
 
@@ -163,8 +164,62 @@
     </div>
   </div>
 
+  <!-- ========================= AI RESULTS PANEL ========================= -->
+  <div id="aiResultPanel" class="ai-panel hidden">
+    <div class="ai-header">
+      <h3><i class="fas fa-satellite-dish"></i> Terrain Intelligence</h3>
+      <button id="closeAiBtn" class="close-ai">&times;</button>
+    </div>
+    
+    <div class="ai-body">
+      <div id="aiLoading" class="ai-loading">
+        <div class="spinner"></div>
+        <p>Analyzing Topography & Infrastructure...</p>
+      </div>
+
+      <div id="aiContent" class="ai-content hidden">
+        <div class="score-card">
+          <div class="score-circle">
+            <span id="aiScore">85</span>
+            <small>Suitability</small>
+          </div>
+          <div class="score-details">
+            <h4>Plot Potential</h4>
+            <p id="aiVerdict">High Potential</p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <label>Vegetation Density</label>
+            <div class="progress-bar"><div id="vegBar" style="width:0%"></div></div>
+            <span id="vegVal">0%</span>
+          </div>
+          <div class="stat-item">
+            <label>Road Density</label>
+            <div class="progress-bar"><div id="roadBar" class="bar-gray" style="width:0%"></div></div>
+            <span id="roadVal">0%</span>
+          </div>
+          <div class="stat-item">
+            <label>Topo Variability</label>
+            <div class="progress-bar"><div id="topoBar" class="bar-brown" style="width:0%"></div></div>
+            <span id="topoVal">Low</span>
+          </div>
+          <div class="stat-item">
+            <label>Terrain Type</label>
+            <div class="tag" id="soilType">Analysing...</div>
+          </div>
+        </div>
+
+        <div class="ai-insights">
+          <h5><i class="fas fa-lightbulb"></i> AI Insight</h5>
+          <p id="aiInsightText">Loading insights based on pixel topography...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ========================= SCRIPT ========================= -->
   <script src="plot.js"></script>
 </body>
 </html>
-
